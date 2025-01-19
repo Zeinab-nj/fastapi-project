@@ -1,2 +1,2 @@
-from .fixture import db_session
+from .fixtures import db_session
 

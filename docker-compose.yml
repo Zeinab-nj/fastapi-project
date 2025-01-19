@@ -1,4 +1,6 @@
-version: "3.9"
+networks:
+   dev-network:
+      driver: bridge
 
 services: 
   dev-db:
@@ -8,18 +10,25 @@ services:
       - .env
     ports:
      - "5432:5432"
+    volumes:
+     - ./scripts:/docker-entrypoint-initdb.d
+    networks:
+      - dev-network
     
-  test_db:
-    image: postgres:16.1-alpine3.19
-    restart: always
-    env_file:
-      - .env
-    ports:
-      - "5433:5432"
+  # test-db:
+  #   image: postgres:16.1-alpine3.19
+  #   restart: always
+  #   env_file:
+  #     - .env
+  #   ports:
+  #     - "5434:5432"
+  #   networks:
+  #     - dev-network
   
   adminer:
     image: adminer
     restart: always
     ports:
      - "8080:8080"
-    
+    networks:
+      - dev-network

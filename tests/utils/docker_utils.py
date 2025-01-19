@@ -1,10 +1,11 @@
 import docker
 import docker.errors
 import time
+import os
+
 
 def is_container_ready(container):
     container.reload()
-    scripts_dir = os.path.abspath("./scripts")
     return container.status == "running"
 
 
@@ -28,7 +29,9 @@ def wait_for_stable_status(container, stable_duration=3, interval=1):
 
 def start_db_container():
     client = docker.from_env()
+    scripts_dir = os.path.abspath("./scripts")
     container_name = "test-db"
+
 
     try:
         existing_container = client.containers.get(container_name)
@@ -39,22 +42,21 @@ def start_db_container():
     except docker.errors.NotFound:
         print(f"Container {container_name} does not exosts")
 
-        container_config = {
-            "name": container_name,
-            "image": "postgres:16.1-alpine3.19",
-            "detach": True,
-            "ports": {"5432":"5432"},
-            "environment": {
-                "POSTGRES_USER": "postgres",
-                "POSTGRES_PASSWORD": "postgres",
-            },
-        }
+    container_config = {
+        "name": container_name,
+        "image": "postgres:16.1-alpine3.19",
+        "detach": True,
+        "ports": {"5432":"5434"},
+        "environment": {
+            "POSTGRES_USER": "postgres",
+            "POSTGRES_PASSWORD": "postgres",
+        },
+        "volumes": [f"{scripts_dir}:/docker-entrypoint-initdb.d"],
+        "network_mode": "fastapi-project-dev-network",
+    }
 
-        container = client.containers.run(**container_config)
+    container = client.containers.run(**container_config)
 
-        while not is_container_ready(container):
-            time.sleep(1)
-
-        if not wait_for_stable_status(container):
-            return RuntimeError("Container did not stabilize within the specified time")
-        
+    time.sleep(5)
+    return container
+    
