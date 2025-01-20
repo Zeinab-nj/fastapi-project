@@ -91,4 +91,5 @@ def test_model_structure_unique_constriants(db_inspector):
 
     assert any(constraint["name"] == "uq_product_name" for constraint in constraints)
     assert any(constraint["name"] == "uq_product_slug" for constraint in constraints)
+    assert any(constraint["name"] == "uq_product_pid" for constraint in constraints)
 

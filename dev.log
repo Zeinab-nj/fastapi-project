@@ -1,0 +1,6 @@
+An exception occuresd: simulated debug error ocurred!
+Exception traceback:
+Traceback (most recent call last):
+  File "/home/sedreh/fastapi-project/main.py", line 15, in read_root
+    raise Exception("simulated debug error ocurred!")
+Exception: simulated debug error ocurred!
