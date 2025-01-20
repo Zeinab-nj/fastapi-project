@@ -1,16 +1,15 @@
 from sqlalchemy import Integer, String, Boolean
-import pytest
 
 
 def test_true():
     assert True
 
-@pytest.mark.model
+
 def test_model_structure_table_exists(db_inspector):
     assert db_inspector.has_table("category")
     
 
-@pytest.mark.model
+
 def test_model_structure_column_data_types(db_inspector):
     table="category"
     columns = {columns["name"] : columns for columns in db_inspector.get_columns(table)}
@@ -23,7 +22,7 @@ def test_model_structure_column_data_types(db_inspector):
     assert isinstance(columns["parent_id"]["type"], Integer)
 
 
-@pytest.mark.model
+
 def test_model_structure_nullable_constraints(db_inspector):
     table = "category"
     columns = db_inspector.get_columns(table)
@@ -44,7 +43,7 @@ def test_model_structure_nullable_constraints(db_inspector):
             ), f"column '{column_name}' is not nullable as expected"
 
 
-@pytest.mark.model
+
 def test_model_structure_column_constraints(db_inspector):
     table = "category"
     constraints = db_inspector.get_check_constraints(table)
@@ -53,7 +52,7 @@ def test_model_structure_column_constraints(db_inspector):
     assert any(constraint["name"] == "category_slug_length_check" for constraint in constraints)
 
 
-@pytest.mark.model
+
 def test_model_structure_default_values(db_inspector):
     table = "category"
     columns = {columns["name"]: columns for columns in db_inspector.get_columns(table)}
@@ -62,7 +61,7 @@ def test_model_structure_default_values(db_inspector):
     assert columns["level"]["default"] == "100"
 
 
-@pytest.mark.model
+
 def test_model_structure_column_lengths(db_inspector):
     table = "category"
     columns = {columns["name"]: columns for columns in db_inspector.get_columns(table)}
@@ -71,7 +70,7 @@ def test_model_structure_column_lengths(db_inspector):
     assert columns["slug"]["type"].length == 120
 
 
-@pytest.mark.model
+
 def test_model_structure_unique_constriants(db_inspector):
     table = "category"
     constraints = db_inspector.get_unique_constraints(table)

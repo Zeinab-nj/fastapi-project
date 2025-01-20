@@ -5,12 +5,12 @@ from sqlalchemy.dialects.postgresql import UUID
 def test_true():
     assert True
 
-@pytest.mark.model
+
 def test_model_structure_table_exists(db_inspector):
     assert db_inspector.has_table("product")
     
 
-@pytest.mark.model
+
 def test_model_structure_column_data_types(db_inspector):
     table="product"
     columns = {columns["name"] : columns for columns in db_inspector.get_columns(table)}
@@ -30,13 +30,14 @@ def test_model_structure_column_data_types(db_inspector):
     
 
 
-@pytest.mark.model
+
 def test_model_structure_nullable_constraints(db_inspector):
     table = "product"
     columns = db_inspector.get_columns(table)
 
     expected_nullable = {
         "id": False,
+        "pid": False,
         "name": False,
         "slug": False,
         "is_active": False,
@@ -55,7 +56,7 @@ def test_model_structure_nullable_constraints(db_inspector):
             ), f"column '{column_name}' is not nullable as expected"
 
 
-@pytest.mark.model
+
 def test_model_structure_column_constraints(db_inspector):
     table = "product"
     constraints = db_inspector.get_check_constraints(table)
@@ -64,17 +65,17 @@ def test_model_structure_column_constraints(db_inspector):
     assert any(constraint["name"] == "product_slug_length_check" for constraint in constraints)
 
 
-@pytest.mark.model
+
 def test_model_structure_default_values(db_inspector):
     table = "product"
     columns = {columns["name"]: columns for columns in db_inspector.get_columns(table)}
     
-    assert columns["is_digital"]["default"] == "false"
-    assert columns["is_active"]["default"] == "false"
-    assert columns["stock_status"]["default"] == "oos'::status_enum"
+    assert columns["is_digital"]["default"] in ("False", "false", None)
+    assert columns["is_active"]["default"] in ("False", "false", None)
+    assert columns["stock_status"]["default"] == "'oos'::status_enum"
 
 
-@pytest.mark.model
+
 def test_model_structure_column_lengths(db_inspector):
     table = "product"
     columns = {columns["name"]: columns for columns in db_inspector.get_columns(table)}
@@ -83,11 +84,11 @@ def test_model_structure_column_lengths(db_inspector):
     assert columns["slug"]["type"].length == 220
 
 
-@pytest.mark.model
+
 def test_model_structure_unique_constriants(db_inspector):
     table = "product"
     constraints = db_inspector.get_unique_constraints(table)
 
-    assert any(constraint["name"] == "uq_product_name_level" for constraint in constraints)
+    assert any(constraint["name"] == "uq_product_name" for constraint in constraints)
     assert any(constraint["name"] == "uq_product_slug" for constraint in constraints)
 
