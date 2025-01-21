@@ -4,9 +4,11 @@ import pytest
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from fastapi.testclient import TestClient
+from main import app
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="session")
 def db_session():
     container = start_db_container()
 
@@ -20,6 +22,11 @@ def db_session():
     
     yield SessionLocal
 
-    container.stop()
-    container.remove()
+    # container.stop()
+    # container.remove()
     engine.dispose()
+
+@pytest.fixture(scope="function")
+def client():
+    with TestClient(app) as _client:
+        yield _client

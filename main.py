@@ -1,19 +1,14 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 import logging
 import logging.config
+from app.routers import category_routes
 
 
 logging.config.fileConfig("logging.conf", disable_existing_loggers=False)
+logger = logging.getLogger(__name__)
 
 
 app = FastAPI()
+app.include_router(category_routes.router, prefix="/api/category", tags=["categories"])
 
 
-@app.get("/")
-async def read_root():
-    try:
-        raise Exception("simulated debug error ocurred!")
-    except Exception as e:
-        logging.debug(f"An exception occuresd: {e}")
-        logging.debug("Exception traceback:", exc_info=True)
-    return {"message": "Hello, world"}
